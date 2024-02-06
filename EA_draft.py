@@ -159,3 +159,8 @@ num_generations = 100
 
 min_distance = tsp(graph, population_size, num_generations)
 print("Minimum distance:", min_distance)
+
+
+# need to modify
+#   - fitness function
+#   - Initatialization
