@@ -1,5 +1,6 @@
 import numpy as np 
 from Selection import Selection
+from tqdm import tqdm
 rng = np.random.default_rng()
 class EA:
     def __init__(self, seed = rng, population_size = 30, dataset = "qa194.tsp", 
@@ -17,8 +18,7 @@ class EA:
         self.mutation_type = mutation_type
         return
     
-    def load_data(self):
-        return 
+    
     def population_init(self):
         return 
     def mutation(self, chromosome):
@@ -39,8 +39,7 @@ class EA:
         return np.array([self.get_fitness(chromosome) for chromosome in self.population])
     def get_fitness(self,chromosome):
         return
-    def selection(self):
-        pass
+    
     def crossover(self, parent1, parent2):
         i1 = self.seed.choice(np.arange(self.chromosome_length))
         i2 = self.seed.choice(np.arange(self.chromosome_length))
@@ -49,29 +48,29 @@ class EA:
         child[i2:] = parent2[i2:] 
         return np.array(child)
     def Generation(self):
+        ########### Compute Fitness ######################
         fitness_list = self.evaluate()
+        ########### Parent Selection #####################
         parents = self.selection_scheme.get_parents(self.population,fitness_list, self.selection_method)
         offspring = list()
-        # Perform recombination
+        ##############3 Perform recombination ############
         for i in range(0,len(parents),2):
             offspring.append(self.crossover(parents[i,:],parents[i+1,:]))
         # print(f'The number of offsprings are: {len(offspring)}')
         offspring = np.array(offspring)
         # print(len(self.population))
         self.population = np.concatenate((self.population,offspring), axis = 0 )
-        # print(len(self.population))
-        # perform mutation
+       
+        ########### perform mutation ##################3
         ''''
         Is it okay to mutate the population after recombination?
+        
+        Made a mutation mask to make the algorithm more efficient. Now instead of O(N) where N = population size the complexity is O(NP) wehre NP is the number of chromosomes to be mutated
         '''
         mutation_prob = self.seed.random([len(self.population)])
         mutation_mask = (mutation_prob <= self.mutation_rate)
         mask_indices = np.where(mutation_mask == True)[0]
-        # print(f'Mutation inddices = {mask_indices}')
-        # print(self.population)
-        # print("The length of the mask")
-        # print(self.population[mutation_mask,:])
-        
+
         for i in mask_indices:
             # print(f'the indices ={i}')
             self.population[i,:] = self.mutation(self.population[i,:])
@@ -83,4 +82,6 @@ class EA:
         # print(offspring)
         return 
     def main(self):
-        pass
+        for i in tqdm(range(self.num_generations)):
+            pass
+        return 
