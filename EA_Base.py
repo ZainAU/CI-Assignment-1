@@ -1,4 +1,5 @@
 import numpy as np 
+from Selection import Selection
 rng = np.random.default_rng()
 class EA:
     def __init__(self, seed = rng, population_size = 30, dataset = "qa194.tsp", 
