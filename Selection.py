@@ -5,11 +5,13 @@ class Selection:
     def __init__(self,offspring_number, seed = rng ):
         self.seed = seed
         self.offspring_number = offspring_number
+        self.selection_function = {'FPS':self.fitness_proportional_sampling,
+                                   None: None}
     def fitness_proportional_sampling(self, population, fitness_list):
         parents = list()
         norm_fitness = np.array(fitness_list)
         norm_fitness = norm_fitness/np.sum(norm_fitness)    
-        print(population)    
+        # print(population)    
         c = 0
         cdf = []
         for i in range(len(norm_fitness)):
@@ -24,11 +26,13 @@ class Selection:
 
         parents = np.array(parents)   
             
-        # print(f'The number of parents are {len(parents)}, number of children {self.offspring_number}')
+        '''# print(f'The number of parents are {len(parents)}, number of children {self.offspring_number}')
         # print(len(cdf))
-        # print(len(parents))
+        # print(len(parents))'''
 
         return parents
+    def get_parents(self, population,fitness_list, func = 'FTP'):
+        return self.selection_function[func](population,fitness_list)
     def stochastic_universal_sampling(self):
         pass
     
