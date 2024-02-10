@@ -7,9 +7,9 @@ mutation_type = 'insert'
 class TSP_EA(EA):
     def __init__(self, seed=rng, population_size=30, dataset = "qa194.tsp",
                  mutation_rate = 0.5, offspring_number = 10,  num_generations = 50, Iterations = 10, selection_method = 'FPS', 
-                 mutation_type = mutation_type
+                 mutation_type = mutation_type, optimization_type = 'minimization'
                  ):
-        super().__init__(seed, population_size, dataset, mutation_rate, offspring_number,  num_generations, Iterations, selection_method,mutation_type )
+        super().__init__(seed, population_size, dataset, mutation_rate, offspring_number,  num_generations, Iterations, selection_method,mutation_type , optimization_type)
         population =  self.population_init()
         return 
     def population_init(self):
@@ -91,14 +91,17 @@ class TSP_EA(EA):
         return 
 
 if __name__ == '__main__':
-    obj = TSP_EA()
+    num_generations = 30000
+    slection_method = 'FPS'
+    optimization_type='minimization'
+    obj = TSP_EA(num_generations=num_generations, optimization_type=optimization_type,selection_method=slection_method)
     # parent1 = obj.population[1,:]
     # parent2 = obj.population[2,:]
     # child = obj.crossover(obj.population[1,:],obj.population[2,:])
     # print(f'parent1 = {parent1} \nparent2 = {parent2}')
     # print(f'CHild - {child}')
 
-    obj.Generation()
+    obj.main()
 
 
     
