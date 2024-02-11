@@ -75,7 +75,7 @@ class TSP_EA(EA):
 if __name__ == '__main__':
     mutation_rate = 0.25
     num_generations = 1000
-    slection_method = 'RBS'
+    slection_method = 'BT'
     optimization_type='minimization'
     population_size = 1000
     obj = TSP_EA(num_generations=num_generations,
