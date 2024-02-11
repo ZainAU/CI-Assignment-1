@@ -1,6 +1,7 @@
 import numpy as np 
 from EA_Base import EA
 from Selection import Selection
+import matplotlib.pyplot as plt
 rng = np.random.default_rng()
 mutation_type = 'insert'
 
@@ -55,46 +56,33 @@ class TSP_EA(EA):
         
     def Generation(self):
         return super().Generation()
-    # def Generation(self):
-        fitness_list = self.evaluate()
-        parents = self.selection_scheme.get_parents(self.population,fitness_list, self.selection_method)
-        offspring = list()
-        # Perform recombination
-        for i in range(0,len(parents),2):
-            offspring.append(self.crossover(parents[i,:],parents[i+1,:]))
-        # print(f'The number of offsprings are: {len(offspring)}')
-        offspring = np.array(offspring)
-        # print(len(self.population))
-        self.population = np.concatenate((self.population,offspring), axis = 0 )
-        # print(len(self.population))
-        # perform mutation
-        ''''
-        Is it okay to mutate the population after recombination?
-        '''
-        mutation_prob = self.seed.random([len(self.population)])
-        mutation_mask = (mutation_prob <= self.mutation_rate)
-        mask_indices = np.where(mutation_mask == True)[0]
-        # print(f'Mutation inddices = {mask_indices}')
-        # print(self.population)
-        # print("The length of the mask")
-        # print(self.population[mutation_mask,:])
+    
+    def main(self):
+        average_fit = super().main()
         
-        for i in mask_indices:
-            # print(f'the indices ={i}')
-            self.population[i,:] = self.mutation(self.population[i,:])
 
-        count = len(mask_indices)
-        
-        print(f"The number of mutations are = {count}")
+        plt.plot(average_fit)
+        plt.ylabel("Total distances")
+        plt.xlabel("100th Generations")
+        # plt.text(0.45,0.5, "Selection method")
+        plt.title(f"Populatation size ={self.population_size}, selection scheme = {self.selection_method}")
+        plt.show()
+        print(f'Final value = {average_fit[-1]}')
 
-        # print(offspring)
-        return 
+
+
 
 if __name__ == '__main__':
-    num_generations = 30000
-    slection_method = 'FPS'
+    mutation_rate = 0.25
+    num_generations = 1000
+    slection_method = 'RBS'
     optimization_type='minimization'
-    obj = TSP_EA(num_generations=num_generations, optimization_type=optimization_type,selection_method=slection_method)
+    population_size = 1000
+    obj = TSP_EA(num_generations=num_generations,
+                optimization_type=optimization_type,
+                selection_method=slection_method,
+                population_size=population_size,
+                mutation_rate=mutation_rate)
     # parent1 = obj.population[1,:]
     # parent2 = obj.population[2,:]
     # child = obj.crossover(obj.population[1,:],obj.population[2,:])

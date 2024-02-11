@@ -110,7 +110,6 @@ class EA:
         for i in tqdm(range(self.num_generations)):
             if i%100:
                 average_fit.append(self.Generation())
-        plt.plot(average_fit)
-        plt.show()
-        print(f'Final value = {average_fit[-1]}')
+        return average_fit
+        
         return 

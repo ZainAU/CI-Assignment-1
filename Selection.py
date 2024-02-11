@@ -6,7 +6,10 @@ class Selection:
         self.seed = seed
         self.offspring_number = offspring_number
         self.selection_function = {'FPS':self.fitness_proportional_sampling,
-                                   'Trunc': self.truncation}
+                                   'Trunc': self.truncation,
+                                   'RBS':self.rank_based_selection,
+                                   'Random':self.random_selection,
+                                   'BT': self.binary_tournament}
     def fitness_proportional_sampling(self, population, fitness_list, num_samples):
         samples = list()
 
@@ -33,7 +36,18 @@ class Selection:
         return samples
     def truncation(self,population, fitness_list, num_samples):
         return population[np.argsort(fitness_list),:][-num_samples:]
-        
+    def rank_based_selection(self,population, fitness_list, num_samples):
+        sorted_indices = np.argsort(fitness_list)[::-1] #This line gives the indices of our population sorted in descending order
+        sorted_population = population[sorted_indices]
+        ranks = np.arange(len(population))[::-1]+1 # ranks on the newly sorted population
+        samples = self.fitness_proportional_sampling(population=sorted_population,fitness_list=ranks,num_samples=num_samples)
+        return samples
+    def binary_tournament(self,population, fitness_list, num_samples):
+        samples = []
+        return samples
+    def random_selection(self, population,num_samples, fitness_list = None):
+        return self.seed.choice(population, num_samples)
+
     def get_parents(self, population,fitness_list, func = 'FTP'):
         num_samples = self.offspring_number*2
         return self.selection_function[func](population,fitness_list, num_samples)
