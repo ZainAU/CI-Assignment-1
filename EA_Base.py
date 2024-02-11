@@ -23,7 +23,7 @@ class EA:
     
     def population_init(self):
         return 
-    def mutation(self, chromosome):
+    def mutation(self, chromosome): 
         i1 = self.seed.choice(np.arange(self.chromosome_length)) # selecting random indexes to insert or swap
         i2 = self.seed.choice(np.arange(self.chromosome_length))
         
@@ -62,8 +62,8 @@ class EA:
         return np.array(child)
     def Generation(self):
         ########### Compute Fitness ######################
-        fitness_list = self.evaluate()
-        ############## Optimization type ################
+        fitness_list = self.evaluate()                             
+        ############## Optimization type ################      
         if self.optimization_type == 'minimization':
             fitness_values = np.sum(fitness_list) - fitness_list 
         elif self.optimization_type == 'maximization':
@@ -112,4 +112,4 @@ class EA:
                 average_fit.append(self.Generation())
         return average_fit
         
-        return 
+        
