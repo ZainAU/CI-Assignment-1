@@ -58,14 +58,19 @@ class TSP_EA(EA):
         return super().Generation()
     
     def main(self):
-        average_fit = super().main()
+        best_fit,average_fit = super().main()
         
-
+        plt.subplot(1,2,1)
         plt.plot(average_fit)
         plt.ylabel("Total distances")
         plt.xlabel("100th Generations")
+        plt.title(f"selection scheme = {self.selection_method}, Average fit")
+        plt.subplot(1,2,2)
+        plt.plot(best_fit)
+        plt.ylabel("Total distances")
+        plt.xlabel("100th Generations")
         # plt.text(0.45,0.5, "Selection method")
-        plt.title(f"Populatation size ={self.population_size}, selection scheme = {self.selection_method}")
+        plt.title(f"Populatation size ={self.population_size}, Best Fit")
         plt.show()
         print(f'Final value = {average_fit[-1]}')
 
@@ -73,21 +78,20 @@ class TSP_EA(EA):
 
 
 if __name__ == '__main__':
-    mutation_rate = 0.25
-    num_generations = 1000
+    seed = np.random.default_rng(42)
+    mutation_rate = 0.5
+    num_generations = 50000
     slection_method = 'BT'
     optimization_type='minimization'
-    population_size = 1000
+    population_size = 30
+    offspring_number = 10
     obj = TSP_EA(num_generations=num_generations,
                 optimization_type=optimization_type,
                 selection_method=slection_method,
                 population_size=population_size,
-                mutation_rate=mutation_rate)
-    # parent1 = obj.population[1,:]
-    # parent2 = obj.population[2,:]
-    # child = obj.crossover(obj.population[1,:],obj.population[2,:])
-    # print(f'parent1 = {parent1} \nparent2 = {parent2}')
-    # print(f'CHild - {child}')
+                mutation_rate=mutation_rate,
+                seed=seed,
+                offspring_number=offspring_number)
 
     obj.main()
 

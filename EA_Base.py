@@ -84,12 +84,12 @@ class EA:
         
         Made a mutation mask to make the algorithm more efficient. Now instead of O(N) where N = population size the complexity is O(NP) wehre NP is the number of chromosomes to be mutated
         '''
-        mutation_prob = self.seed.random([len(self.population)])
+        mutation_prob = self.seed.random([len(offspring)])
         mutation_mask = (mutation_prob <= self.mutation_rate)
         mask_indices = np.where(mutation_mask == True)[0]
 
         for i in mask_indices:
-            self.population[i,:] = self.mutation(self.population[i,:])
+            offspring[i,:] = self.mutation(offspring[i,:])
 
         num_mutations = len(mask_indices)
         ###### Concatenate the offsprings with the parents
@@ -104,12 +104,24 @@ class EA:
         else:
             AssertionError("Please input correct type of optimization")
         self.population = self.selection_scheme.get_survivor(self.population,fitness_values, self.population_size, self.selection_method)
-        return np.min(fitness_list)
+        
+        if self.optimization_type == 'minimization':
+            best_so_far = np.min(fitness_list)
+        elif self.optimization_type == 'maximization':
+            best_so_far = np.max(fitness_list)
+        else:
+            AssertionError("Please input correct optimization")
+
+        return best_so_far,np.average(fitness_list)
     def main(self):
         average_fit = list()
+        best_fit = list()
         for i in tqdm(range(self.num_generations)):
             if i%100:
-                average_fit.append(self.Generation())
-        return average_fit
+                best_so_far, average_so_far = self.Generation()
+                average_fit.append(average_so_far)
+                best_fit.append(best_so_far)
+        return best_fit,average_fit
+        
         
         
