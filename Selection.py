@@ -11,6 +11,10 @@ class Selection:
                                    'Random':self.random_selection,
                                    'BT': self.binary_tournament}
     def fitness_proportional_sampling(self, population, fitness_list, num_samples):
+        
+        sorted_indices = np.argsort(fitness_list)[::-1] #This line gives the indices of our population sorted in descending order
+        population = population[sorted_indices]
+        fitness_list = fitness_list[sorted_indices]
         samples = list()
 
         norm_fitness = np.array(fitness_list)

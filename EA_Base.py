@@ -18,6 +18,7 @@ class EA:
         self.selection_scheme = Selection(offspring_number=self.offspring_number, seed=seed)
         self.mutation_type = mutation_type
         self.optimization_type = optimization_type
+        self.best_chromosome = [None, None]#[chromosome, fitness]
         return
     
     
@@ -61,6 +62,7 @@ class EA:
         assert len(np.unique(child)) == self.chromosome_length
         return np.array(child)
     def Generation(self):
+        best_fitness = self.best_chromosome[1]
         ########### Compute Fitness ######################
         fitness_list = self.evaluate()                             
         ############## Optimization type ################      
@@ -107,10 +109,28 @@ class EA:
         
         if self.optimization_type == 'minimization':
             best_so_far = np.min(fitness_list)
+            for i in range(len(fitness_list)):
+                try:
+                    if fitness_list[i] <= best_fitness:
+                        self.best_chromosome[1] = fitness_list
+                        self.best_chromosome[0] = self.population[i]
+                        
+
+                except:
+                    self.best_chromosome[1] = fitness_list[i]
         elif self.optimization_type == 'maximization':
             best_so_far = np.max(fitness_list)
+            for i in range(len(fitness_list)):
+                try:
+                    if fitness_list[i] >= best_fitness:
+                        self.best_chromosome[1] = fitness_list
+                        self.best_chromosome[0] = self.population[i]
+                except:
+                    self.best_chromosome[1] = fitness_list[i]
+                    
         else:
             AssertionError("Please input correct optimization")
+        
 
         return best_so_far,np.average(fitness_list)
     def main(self):
