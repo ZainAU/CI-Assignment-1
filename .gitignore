@@ -1,0 +1,13 @@
+# Ignore EvoLisa-oysteinkrog folder
+EvoLisa-oysteinkrog/
+
+# Ignore GAIR-SebastianCharmot folder
+GAIR-SebastianCharmot/
+
+ci-assignment-venv/
+
+./__pycache__/*
+
+__pycache__/*.pyc
+__pycache__/EA_Base.cpython-311.pyc
+__pycache__/Selection.cpython-311.pyc
