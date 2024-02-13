@@ -136,6 +136,8 @@ class EA:
 
         return best_so_far,np.average(fitness_list)
     def main(self):
+        best_fit_per_generation = list()
+        average_fit_per_generation = list()
         average_fit = list()
         best_fit = list()
         for i in tqdm(range(self.num_generations)):
@@ -143,7 +145,10 @@ class EA:
                 best_so_far, average_so_far = self.Generation()
                 average_fit.append(average_so_far)
                 best_fit.append(best_so_far)
-        return best_fit,average_fit
+                best_fit_per_generation.append(best_so_far)
+                average_fit_per_generation.append(best_so_far)
+                
+        return best_fit,average_fit, best_fit_per_generation,average_fit_per_generation
         
         
         

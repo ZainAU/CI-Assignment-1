@@ -61,34 +61,41 @@ class TSP_EA(EA):
         selection_methods = ['BT', 'FPS', 'Trunc', 'RBS','RBS']
         # selection_methods = ['FPS','RBS']
 
-        attempt = 'third'
+        attempt = 'first'
         for selection in selection_methods:
-            self.selection_method = selection
-            best_fit,average_fit = super().main()
-            
-            fig = plt.figure()
-            plt.subplot(1,2,1)
-            plt.plot(average_fit)
-            plt.ylabel("Total distances")
-            plt.xlabel("Generations")
-            plt.title(f" Average fit")
-            plt.subplot(1,2,2)
-            plt.plot(best_fit)
-            plt.ylabel("Total distances")
-            plt.xlabel("Generations")
-            # plt.text(0.45,0.5, "Selection method")
-            plt.title(f"Best Fit: Best Value = {self.best_chromosome[1]}")
-            # Save the full figure...
-            fig.savefig(f'TSP_fig/{self.selection_method}-{self.population_size}-{self.mutation_rate}-{attempt}.png')
-            # plt.show()
-            best_chromosome = self.best_chromosome[0]
-            best_fitness = self.best_chromosome[1]
-            with open('Best chromosomes.txt', 'a') as file:
-                file.write(f'{self.selection_method}-{self.population_size}-{self.mutation_rate}-{attempt}')
-                file.write(f'Best value = {best_fitness}\nBest chromosome =\n{best_chromosome}')
+            for i in range(self.Iterations):
+                
+                self.selection_method = selection
+                best_fit,average_fit,best_so_far_generation, average_so_far_generation  = super().main()
+                
+                fig = plt.figure()
+                plt.subplot(1,2,1)
+                plt.plot(average_fit)
+                plt.ylabel("Total distances")
+                plt.xlabel("Generations")
+                plt.title(f" Average fit")
+                plt.subplot(1,2,2)
+                plt.plot(best_fit)
+                plt.ylabel("Total distances")
+                plt.xlabel("Generations")
+                # plt.text(0.45,0.5, "Selection method")
+                plt.title(f"Best Fit: Best Value = {self.best_chromosome[1]}")
+                # Save the full figure...
+                fig.savefig(f'TSP_fig/{self.selection_method}-{self.population_size}-{self.mutation_rate}-iteration-{i}.png')
+                # plt.show()
+                best_chromosome = self.best_chromosome[0]
+                best_fitness = self.best_chromosome[1]
+                best_so_far_generation.append(best_fitness)
+                with open(f'Attempt {attempt} Best chromosomes.txt', 'a') as file:
+                    file.writelines(['-----------------------------------------------------------'])
+                    file.writelines([f'{self.selection_method}-{self.population_size}-{self.mutation_rate}-{attempt}'])
+                    file.writelines([f'Best value = {best_fitness}\nBest chromosome =\n{best_chromosome}'])
+                    file.writelines([f'Best fitness per generation = \n{best_so_far_generation}'])
+                    file.writelines([f'Average fitness per generation = \n{average_so_far_generation}'])
+                    file.writelines(['-----------------------------------------------------------'])
 
-            print(f'Best value = {best_fitness}\nBest chromosome =\n{best_chromosome}')
-            self.best_chromosome = [None, None]
+                print(f'Best value = {best_fitness}\nBest chromosome =\n{best_chromosome}')
+                self.best_chromosome = [None, None]
 
 
 
