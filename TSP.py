@@ -75,7 +75,7 @@ class TSP_EA(EA):
             plt.subplot(1,2,2)
             plt.plot(best_fit)
             plt.ylabel("Total distances")
-            plt.xlabel("100th Generations")
+            plt.xlabel("Generations")
             # plt.text(0.45,0.5, "Selection method")
             plt.title(f"Best Fit: Best Value = {self.best_chromosome[1]}")
             # Save the full figure...

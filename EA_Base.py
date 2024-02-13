@@ -19,7 +19,9 @@ class EA:
         self.mutation_type = mutation_type
         self.optimization_type = optimization_type
         self.best_chromosome = [None, None]#[chromosome, fitness]
+        
         return
+    
     
     
     def population_init(self):
