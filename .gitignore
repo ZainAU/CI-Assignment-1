@@ -11,3 +11,5 @@ ci-assignment-venv/
 __pycache__/*.pyc
 __pycache__/EA_Base.cpython-311.pyc
 __pycache__/Selection.cpython-311.pyc
+Q2/imgChromo.py
+Q2/mona-lisa.py
