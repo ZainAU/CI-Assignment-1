@@ -12,33 +12,37 @@ class JSSP_EA(EA):
         self.path = path
         self.population_init()
         return 
-    def get_order(self, chromosome):
-        order = np.zeros(len(chromosome),dtype=int)
-        for i in range(self.J):
-            job_index = np.where(chromosome == i )
-            order_ind = 0
-            for j in job_index[0]:
-                order[j] = order_ind 
-                order_ind += 1
-                # print(order)
-        return order
+    
     def crossover(self, parent1, parent2):
+   
         i1 = self.seed.choice(np.arange(self.chromosome_length//2))
         i2 = int(i1+self.chromosome_length//2)
-        offspring = parent1.copy()
-        parent1_attribute = parent1[i1:i2]
-        parent2_attribute =[]
-        ''''''
+ 
+        offspring = np.ones(np.shape(parent1),dtype=int) * (self.J+1) #multiplying so that np.where doesnt give wrong answer for job == 0
+        parent1attribute = parent1[i1:i2]
+        offspring[i1:i2]  =  parent1attribute
+        j = 0
+        i = 0
+        for job in parent2:
+            indices = np.where(offspring == job)[0] 
+            if len(indices) < self.J:
+                if i == i1:
+                    i = i2
+                offspring[i] = job     
+                i += 1 
+            if i == self.chromosome_length:
+                break
         return offspring
-  
+    
     def population_init(self):
         self.dataLoader()
         self.J = np.shape(self.job_sequence_matrix)[0]
         self.M = np.shape(self.job_sequence_matrix)[1]
-        self.population = self.seed.permuted(np.tile(np.tile(np.arange(self.J), [self.M]),[self.population_size,1]))
+        
+        self.population = self.seed.permuted(np.tile(np.tile(np.arange(self.J), [self.M]),[self.population_size,1]),axis = 1)
         # self.population = np.zeros([self.population_size,self.chromosome_length],dtype = int)
         ## Gives a numpy array of tuples, these tuples will store the operation information i.e. O_{ij} = ith job and jth operation
-        print(self.population)
+        # print(self.population)
         return 
     def dataLoader(self):
         with open(self.path, "r") as file:
@@ -61,8 +65,17 @@ class JSSP_EA(EA):
                     k+=1
                
         return 
-    
-    
+    def get_order(self, chromosome):
+        order = np.zeros(len(chromosome),dtype=int)
+        for i in range(self.J):
+            job_index = np.where(chromosome == i )
+            order_ind = 0
+            for j in job_index[0]:
+                order[j] = order_ind 
+                order_ind += 1
+        return order
+    def mutation(self, chromosome):
+        return super().mutation(chromosome)
     def get_fitness(self, chromosome):
         '''
         Assumption is that the chromosome is valid: so dont need to verify the sequence constraint
@@ -80,19 +93,35 @@ class JSSP_EA(EA):
         for i in range(self.chromosome_length):
             j = chromosome[i]
             o = order[i]
+   
+
             m = self.job_sequence_matrix[j,o]
-            print(previous_job[j])
+            # print(previous_job[j])
             
-            maxi = np.max(current_machine[m], previous_job[j]) + self.process_time_matirx[j,o]
+            maxi = np.max([current_machine[m], previous_job[j]]) + self.process_time_matirx[j,o]
             current_machine[m] = maxi
             previous_job[j] = maxi
         time = np.max(previous_job)
         return time
     def evaluate(self):
         return super().evaluate()
+    def Generation(self):
+        return super().Generation()
+    def main(self):
+        best_fit,average_fit=  super().main()
+        plt.plot(best_fit)
+        plt.plot(average_fit)
+        plt.show()
 
+    
 if __name__ == '__main__':
-    obj = JSSP_EA()
-    obj.get_order(obj.population[1,:])
-    print(obj.evaluate()) 
-    # print(x)
+    obj = JSSP_EA(population_size=100)
+    obj.main()
+
+    # obj.get_order(obj.population[1,:])
+
+    # print(obj.population[-1,:])
+    # print(np.shape(obj.population[-1,:]))
+    # print(obj.crossover(obj.population[-1,:],obj.population[-2,:]))
+    # print(obj.mutation(obj.population[-1,:]))
+    # # print(x)
