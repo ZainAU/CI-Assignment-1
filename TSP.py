@@ -58,21 +58,38 @@ class TSP_EA(EA):
         return super().Generation()
     
     def main(self):
-        best_fit,average_fit = super().main()
-        
-        plt.subplot(1,2,1)
-        plt.plot(average_fit)
-        plt.ylabel("Total distances")
-        plt.xlabel("100th Generations")
-        plt.title(f"selection scheme = {self.selection_method}, Average fit")
-        plt.subplot(1,2,2)
-        plt.plot(best_fit)
-        plt.ylabel("Total distances")
-        plt.xlabel("100th Generations")
-        # plt.text(0.45,0.5, "Selection method")
-        plt.title(f"Populatation size ={self.population_size}, Best Fit")
-        plt.show()
-        print(f'Final value = {average_fit[-1]}')
+        selection_methods = ['BT', 'FPS', 'Trunc', 'RBS','RBS']
+        # selection_methods = ['FPS','RBS']
+
+        attempt = 'third'
+        for selection in selection_methods:
+            self.selection_method = selection
+            best_fit,average_fit = super().main()
+            
+            fig = plt.figure()
+            plt.subplot(1,2,1)
+            plt.plot(average_fit)
+            plt.ylabel("Total distances")
+            plt.xlabel("Generations")
+            plt.title(f" Average fit")
+            plt.subplot(1,2,2)
+            plt.plot(best_fit)
+            plt.ylabel("Total distances")
+            plt.xlabel("100th Generations")
+            # plt.text(0.45,0.5, "Selection method")
+            plt.title(f"Best Fit: Best Value = {self.best_chromosome[1]}")
+            # Save the full figure...
+            fig.savefig(f'TSP_fig/{self.selection_method}-{self.population_size}-{self.mutation_rate}-{attempt}.png')
+            # plt.show()
+            best_chromosome = self.best_chromosome[0]
+            best_fitness = self.best_chromosome[1]
+            with open('Best chromosomes.txt', 'a') as file:
+                file.write(f'{self.selection_method}-{self.population_size}-{self.mutation_rate}-{attempt}')
+                file.write(f'Best value = {best_fitness}\nBest chromosome =\n{best_chromosome}')
+
+            print(f'Best value = {best_fitness}\nBest chromosome =\n{best_chromosome}')
+            self.best_chromosome = [None, None]
+
 
 
 
@@ -80,11 +97,11 @@ class TSP_EA(EA):
 if __name__ == '__main__':
     seed = np.random.default_rng(42)
     mutation_rate = 0.5
-    num_generations = 50000
+    num_generations = 5000
     slection_method = 'BT'
     optimization_type='minimization'
-    population_size = 30
-    offspring_number = 10
+    population_size = 100
+    offspring_number = 60
     obj = TSP_EA(num_generations=num_generations,
                 optimization_type=optimization_type,
                 selection_method=slection_method,
