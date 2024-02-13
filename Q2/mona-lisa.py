@@ -66,4 +66,8 @@ class EvolutionaryLisa(EA):
         self.population_init()
         # def population_init() where EvolutionaryLisa inherits from EA
         for i in range(self.num_generations):
-            
+            new_pop = []  # this is not init pop? What is this?
+            # fittest_estimate = float('inf') // we calculate this later right?
+            # why not replace with population_size and a simple int counter, since len operations take longer
+            while len(new_pop) < len(self.population):
+                
