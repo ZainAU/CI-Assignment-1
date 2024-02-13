@@ -7,10 +7,10 @@ mutation_type = 'insert'
 
 class TSP_EA(EA):
     def __init__(self, seed=rng, population_size=30, dataset = "qa194.tsp",
-                 mutation_rate = 0.5, offspring_number = 10,  num_generations = 50, Iterations = 10, selection_method = 'FPS', 
+                 mutation_rate = 0.5, offspring_number = 10,  num_generations = 50, Iterations = 10,parent_selection_method = 'FPS',survival_selection = 'Trunc',
                  mutation_type = mutation_type, optimization_type = 'minimization'
                  ):
-        super().__init__(seed, population_size, dataset, mutation_rate, offspring_number,  num_generations, Iterations, selection_method,mutation_type , optimization_type)
+        super().__init__(seed, population_size, dataset, mutation_rate, offspring_number,  num_generations, Iterations, parent_selection_method ,survival_selection,mutation_type , optimization_type)
         population =  self.population_init()
         return 
     def population_init(self):
@@ -57,46 +57,40 @@ class TSP_EA(EA):
     def Generation(self):
         return super().Generation()
     
-    def main(self):
-        selection_methods = ['BT', 'FPS', 'Trunc', 'RBS','RBS']
-        # selection_methods = ['FPS','RBS']
-
-        attempt = 'first'
+    def main(self, selection_methods):
         for selection in selection_methods:
+            self.parent_selection_method = selection[0]
+            self.survival_Selection_method = selection[1]
+            print(self.Iterations)
+            average_best_fitness = np.zeros([self.Iterations, self.num_generations])
+            avg_avg_fitness = np.zeros([self.Iterations, self.num_generations])
             for i in range(self.Iterations):
                 
-                self.selection_method = selection
-                best_fit,average_fit,best_so_far_generation, average_so_far_generation  = super().main()
+                best_fit,average_fit= super().main()
+                average_best_fitness[i,:] = best_fit
+                avg_avg_fitness[i,:] = average_fit
+               
+            
+            
+            
+            fig = plt.figure()
+            # plt.plot(average_fit,'g')
+            plt.plot(np.average(avg_avg_fitness, axis = 0),'b')
+            # print(np.average(avg_avg_fitness, axis = 0))
+            plt.plot(np.average(average_best_fitness, axis = 0), 'r')
+
+
+            plt.ylabel("Total distances")
+            plt.xlabel("Generations")
+            plt.title(f"Average fit and Bestfit")
+            plt.legend(['Average fit', 'Best fit'])
+     
+            # Save the full figure...
+            fig.savefig(f'TSP_fig/parent-{self.parent_selection_method}-survival-{self.survival_Selection_method}-{self.population_size}-{self.mutation_rate}-iteration-{i}.png')
+            # plt.show()
+       
                 
-                fig = plt.figure()
-                plt.subplot(1,2,1)
-                plt.plot(average_fit)
-                plt.ylabel("Total distances")
-                plt.xlabel("Generations")
-                plt.title(f" Average fit")
-                plt.subplot(1,2,2)
-                plt.plot(best_fit)
-                plt.ylabel("Total distances")
-                plt.xlabel("Generations")
-                # plt.text(0.45,0.5, "Selection method")
-                plt.title(f"Best Fit: Best Value = {self.best_chromosome[1]}")
-                # Save the full figure...
-                fig.savefig(f'TSP_fig/{self.selection_method}-{self.population_size}-{self.mutation_rate}-iteration-{i}.png')
-                # plt.show()
-                best_chromosome = self.best_chromosome[0]
-                best_fitness = self.best_chromosome[1]
-                best_so_far_generation.append(best_fitness)
-                with open(f'Attempt {attempt} Best chromosomes.txt', 'a') as file:
-                    file.writelines(['-----------------------------------------------------------'])
-                    file.writelines([f'{self.selection_method}-{self.population_size}-{self.mutation_rate}-{attempt}'])
-                    file.writelines([f'Best value = {best_fitness}\nBest chromosome =\n{best_chromosome}'])
-                    file.writelines([f'Best fitness per generation = \n{best_so_far_generation}'])
-                    file.writelines([f'Average fitness per generation = \n{average_so_far_generation}'])
-                    file.writelines(['-----------------------------------------------------------'])
-
-                print(f'Best value = {best_fitness}\nBest chromosome =\n{best_chromosome}')
-                self.best_chromosome = [None, None]
-
+          
 
 
 
@@ -105,19 +99,24 @@ if __name__ == '__main__':
     seed = np.random.default_rng(42)
     mutation_rate = 0.5
     num_generations = 5000
-    slection_method = 'BT'
+    suvivor_Selection = 'BT'
+    parent_Selection = 'Trunc'
     optimization_type='minimization'
     population_size = 100
     offspring_number = 60
+    iterations = 4
     obj = TSP_EA(num_generations=num_generations,
                 optimization_type=optimization_type,
-                selection_method=slection_method,
+                survival_selection=suvivor_Selection,
                 population_size=population_size,
+                parent_selection_method=parent_Selection,
+                Iterations= iterations,
                 mutation_rate=mutation_rate,
                 seed=seed,
                 offspring_number=offspring_number)
 
-    obj.main()
+    selection_criteria = [('FPS','Random'),('BT', 'Trunc'),('Trunc','Trunc'),('Random','Random'),('FPS', 'RBS')]
+    obj.main(selection_methods=selection_criteria)
 
 
     
