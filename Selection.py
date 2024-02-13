@@ -36,7 +36,7 @@ class Selection:
                     break
 
         samples = np.array(samples)
-        # print(f'len of samples {len(samples)}')
+
         '''# print(f'The number of parents are {len(parents)}, number of children {self.offspring_number}')
         # print(len(cdf))
         # print(len(parents))'''
@@ -73,6 +73,18 @@ class Selection:
         return samples
 
     def random_selection(self, population, num_samples, fitness_list=None):
+        sample_indices = self.seed.choice(
+            np.arange(len(fitness_list)), 2*num_samples)
+        sample_pop = population[sample_indices, :]
+
+        for i in range(0, len(sample_pop), 2):
+            samples.append(sample_pop[i, :]) if fitness_list[sample_indices[i]
+                                                             ] > fitness_list[sample_indices[i+1]] else samples.append(sample_pop[i+1, :])
+
+        samples = np.array(samples)
+        return samples
+
+    def random_selection(self, population, fitness_list, num_samples):
         return self.seed.choice(population, num_samples)
 
     def get_parents(self, population, fitness_list, func='FTP') -> list():

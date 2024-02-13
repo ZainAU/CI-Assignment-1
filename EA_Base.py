@@ -5,8 +5,9 @@ import matplotlib.pyplot as plt
 rng = np.random.default_rng()
 class EA:
     def __init__(self, seed = rng, population_size = 30, dataset = "qa194.tsp", 
-                 mutation_rate = 0.5, offspring_number = 10,  num_generations = 50, Iterations = 10, selection_method = 'FPS',mutation_type = 'insert',optimization_type = 'minimization'):
-        self.selection_method = selection_method
+                 mutation_rate = 0.5, offspring_number = 10,  num_generations = 50, Iterations = 10, parent_selection_method = 'FPS',survival_selection = 'Trunc',mutation_type = 'insert',optimization_type = 'minimization'):
+        self.parent_selection_method = parent_selection_method
+        self.survival_Selection_method  = survival_selection
         self.seed = seed
         self.population_size = population_size
         self.chromosome_length = None
@@ -75,7 +76,7 @@ class EA:
         else:
             AssertionError("Please input correct type of optimization")
         ########### Parent Selection ###################
-        parents = self.selection_scheme.get_parents(self.population,fitness_values, self.selection_method)
+        parents = self.selection_scheme.get_parents(self.population,fitness_values, self.parent_selection_method)
         offspring = list()
         ##############3 Perform recombination ############
         for i in range(0,len(parents),2):
@@ -107,7 +108,7 @@ class EA:
             fitness_values = fitness_list.copy()
         else:
             AssertionError("Please input correct type of optimization")
-        self.population = self.selection_scheme.get_survivor(self.population,fitness_values, self.population_size, self.selection_method)
+        self.population = self.selection_scheme.get_survivor(self.population,fitness_values, self.population_size, self.survival_Selection_method)
         
         if self.optimization_type == 'minimization':
             best_so_far = np.min(fitness_list)
@@ -140,15 +141,12 @@ class EA:
         average_fit_per_generation = list()
         average_fit = list()
         best_fit = list()
-        for i in tqdm(range(self.num_generations)):
-            if i%100:
-                best_so_far, average_so_far = self.Generation()
-                average_fit.append(average_so_far)
-                best_fit.append(best_so_far)
-                best_fit_per_generation.append(best_so_far)
-                average_fit_per_generation.append(best_so_far)
+        for i in tqdm(range(self.num_generations)):          
+            best_so_far, average_so_far = self.Generation()
+            average_fit.append(average_so_far)
+            best_fit.append(best_so_far)
+            best_fit_per_generation.append(best_so_far)
+            average_fit_per_generation.append(best_so_far)
                 
-        return best_fit,average_fit, best_fit_per_generation,average_fit_per_generation
-        
-        
+        return best_fit,average_fit
         

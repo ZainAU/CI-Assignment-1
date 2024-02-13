@@ -6,9 +6,9 @@ rng = np.random.default_rng()
 mutation_type = 'insert'
 
 class JSSP_EA(EA):
-    def __init__(self, seed=rng, population_size=30, dataset="qa194.tsp", mutation_rate=0.5, offspring_number=10, num_generations=50, Iterations=10, selection_method='FPS', mutation_type='insert', optimization_type='minimization',path = "abz5.txt"):
-        super().__init__(seed= rng,population_size=population_size, 
-                         dataset=dataset, mutation_rate=mutation_rate, offspring_number=offspring_number, num_generations=num_generations, Iterations=Iterations, selection_method=selection_method, mutation_type=mutation_type, optimization_type=optimization_type)
+    def __init__(self, seed=rng, population_size=30, dataset="qa194.tsp", mutation_rate=0.5, offspring_number=10, num_generations=50, Iterations=10, parent_selection='FPS',survival_Selection ='Trunc', mutation_type='insert', optimization_type='minimization',path = "abz5.txt"):
+        super().__init__(seed= seed,population_size=population_size, 
+                         dataset=dataset, mutation_rate=mutation_rate, offspring_number=offspring_number, num_generations=num_generations, Iterations=Iterations, parent_selection_method=parent_selection,survival_selection=survival_Selection, mutation_type=mutation_type, optimization_type=optimization_type)
         self.path = path
         self.population_init()
         return 
@@ -48,8 +48,8 @@ class JSSP_EA(EA):
             ############ Setting the chromosome length ################3
             self.chromosome_length = self.J*self.M
             ''' The dataset has an implicit assumtion that each machine will be used exactly once in a job, i.e. the number of processes in a job equals to the number of machines'''
-            self.job_sequence_matrix = np.zeros([self.J, self.M])
-            self.process_time_matirx = np.zeros([self.J,self.M])
+            self.job_sequence_matrix = np.zeros([self.J, self.M],dtype= int)
+            self.process_time_matirx = np.zeros([self.J,self.M],dtype =int)
             
 
 
@@ -75,10 +75,18 @@ class JSSP_EA(EA):
         time = 0
         order = self.get_order(chromosome)
 
-        current_machine = np.zeros([1, self.M])
-        previous_job = np.zeros([1, self.J])
+        current_machine = np.zeros(self.M,dtype = int)
+        previous_job = np.zeros(self.J,dtype = int)
         for i in range(self.chromosome_length):
-            pass
+            j = chromosome[i]
+            o = order[i]
+            m = self.job_sequence_matrix[j,o]
+            print(previous_job[j])
+            
+            maxi = np.max(current_machine[m], previous_job[j]) + self.process_time_matirx[j,o]
+            current_machine[m] = maxi
+            previous_job[j] = maxi
+        time = np.max(previous_job)
         return time
     def evaluate(self):
         return super().evaluate()
@@ -86,5 +94,5 @@ class JSSP_EA(EA):
 if __name__ == '__main__':
     obj = JSSP_EA()
     obj.get_order(obj.population[1,:])
-    # print(obj.evaluate())
+    print(obj.evaluate()) 
     # print(x)
