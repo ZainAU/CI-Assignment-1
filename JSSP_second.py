@@ -6,9 +6,9 @@ rng = np.random.default_rng()
 mutation_type = 'insert'
 
 class JSSP_EA(EA):
-    def __init__(self, seed=rng, population_size=30, dataset="qa194.tsp", mutation_rate=0.5, offspring_number=10, num_generations=50, Iterations=10, parent_selection='FPS',survival_Selection ='Trunc', mutation_type='insert', optimization_type='minimization',path = "abz5.txt"):
+    def __init__(self, seed=rng, population_size=30, dataset="qa194.tsp", mutation_rate=0.5, offspring_number=10, num_generations=50, Iterations=10, parent_selection='FPS',survival_selection ='Trunc', mutation_type='insert', optimization_type='minimization',path = "abz5.txt"):
         super().__init__(seed= seed,population_size=population_size, 
-                         dataset=dataset, mutation_rate=mutation_rate, offspring_number=offspring_number, num_generations=num_generations, Iterations=Iterations, parent_selection_method=parent_selection,survival_selection=survival_Selection, mutation_type=mutation_type, optimization_type=optimization_type)
+                         dataset=dataset, mutation_rate=mutation_rate, offspring_number=offspring_number, num_generations=num_generations, Iterations=Iterations, parent_selection_method=parent_selection,survival_selection=survival_selection, mutation_type=mutation_type, optimization_type=optimization_type)
         self.path = path
         self.population_init()
         return 
@@ -107,16 +107,68 @@ class JSSP_EA(EA):
         return super().evaluate()
     def Generation(self):
         return super().Generation()
-    def main(self):
-        best_fit,average_fit=  super().main()
-        plt.plot(best_fit)
-        plt.plot(average_fit)
-        plt.show()
+    def main(self,selection_methods):
+        '''ssssssssssssss'''
+        
+        for selection in selection_methods:
+            Best = np.inf
+            self.parent_selection_method = selection[0]
+            self.survival_Selection_method = selection[1]
+            print(self.Iterations)
+            average_best_fitness = np.zeros([self.Iterations, self.num_generations])
+            avg_avg_fitness = np.zeros([self.Iterations, self.num_generations])
+            for i in range(self.Iterations):
+                
+                best_fit,average_fit= super().main()
+                average_best_fitness[i,:] = best_fit
+                avg_avg_fitness[i,:] = average_fit
+                if np.min(best_fit) < Best:
+                    Best = np.min(best_fit)
+               
+            
+            
+            
+            fig = plt.figure()
+            # plt.plot(average_fit,'g')
+            plt.plot(np.average(avg_avg_fitness, axis = 0),'b')
+            # print(np.average(avg_avg_fitness, axis = 0))
+            plt.plot(np.average(average_best_fitness, axis = 0), 'r')
+
+
+            plt.ylabel("Total distances")
+            plt.xlabel("Generations")
+            plt.title(f"Average fit and Bestfit")
+            plt.legend(['Average fit', 'Best fit'])
+     
+            # Save the full figure...
+            fig.savefig(f'JSSP_figs/Best-fit-{int(Best)}-parent-{self.parent_selection_method}-survival-{self.survival_Selection_method}-{self.population_size}-{self.mutation_rate}-iteration-{i}.png')
+            # plt.show()
 
     
 if __name__ == '__main__':
-    obj = JSSP_EA(population_size=100)
-    obj.main()
+    seed = np.random.default_rng(42)
+    mutation_rate = 0.5
+    num_generations = 1000
+    suvivor_Selection = 'BT'
+    parent_Selection = 'Trunc'
+    optimization_type='minimization'
+    population_size = 100
+    offspring_number = 60
+    iterations = 4
+    path = 'abz5.txt'
+    
+    obj = JSSP_EA(num_generations=num_generations,
+                optimization_type=optimization_type,
+                survival_selection=suvivor_Selection,
+                population_size=population_size,
+                parent_selection=parent_Selection,
+                Iterations= iterations,
+                mutation_rate=mutation_rate,
+                seed=seed,
+                offspring_number=offspring_number,
+                path = path)
+    selection_criteria = [('FPS','Random'),('BT', 'Trunc'),('Trunc','Trunc'),('Random','Random'),('FPS', 'RBS')]
+    obj.main(selection_methods=selection_criteria)
 
     # obj.get_order(obj.population[1,:])
 

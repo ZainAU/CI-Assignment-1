@@ -59,6 +59,7 @@ class TSP_EA(EA):
     
     def main(self, selection_methods):
         for selection in selection_methods:
+            np.min(best_fit)
             self.parent_selection_method = selection[0]
             self.survival_Selection_method = selection[1]
             print(self.Iterations)
@@ -69,6 +70,8 @@ class TSP_EA(EA):
                 best_fit,average_fit= super().main()
                 average_best_fitness[i,:] = best_fit
                 avg_avg_fitness[i,:] = average_fit
+                if np.min(best_fit) < Best:
+                    Best = np.min(best_fit)
                
             
             
@@ -86,7 +89,7 @@ class TSP_EA(EA):
             plt.legend(['Average fit', 'Best fit'])
      
             # Save the full figure...
-            fig.savefig(f'TSP_fig/parent-{self.parent_selection_method}-survival-{self.survival_Selection_method}-{self.population_size}-{self.mutation_rate}-iteration-{i}.png')
+            fig.savefig(f'TSP_fig/Best-fit-{int(Best)}-parent-{self.parent_selection_method}-survival-{self.survival_Selection_method}-{self.population_size}-{self.mutation_rate}-iteration-{i}.png')
             # plt.show()
        
                 
