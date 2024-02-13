@@ -12,38 +12,45 @@ class JSSP_EA(EA):
         self.path = path
         self.population_init()
         return 
-    
+    def get_order(self, chromosome):
+        order = np.zeros(len(chromosome),dtype=int)
+        for i in range(self.J):
+            job_index = np.where(chromosome == i )
+            order_ind = 0
+            for j in job_index[0]:
+                order[j] = order_ind 
+                order_ind += 1
+                # print(order)
+        return order
+    def crossover(self, parent1, parent2):
+        i1 = self.seed.choice(np.arange(self.chromosome_length//2))
+        i2 = int(i1+self.chromosome_length//2)
+        offspring = parent1.copy()
+        parent1_attribute = parent1[i1:i2]
+        parent2_attribute =[]
+        ''''''
+        return offspring
+  
     def population_init(self):
         self.dataLoader()
-        np.array([(1,2),(3,4)], dtype="i,i") 
-        
-        self.population = np.zeros([self.population_size,self.chromosome_length,2],dtype = int)
-        ## Gives a numpy array of tuples, these tuples will store the operation information i.e. O_{ij} = ith job and jth operation
-
-        ######### Initializing by permuting the colum of the job sequence matrix and then putting that into the chromosome, i.e. ensuring i-th operation for a job will always come before the j-th for all i < j
         self.J = np.shape(self.job_sequence_matrix)[0]
         self.M = np.shape(self.job_sequence_matrix)[1]
-        for chrom_index in range(self.population_size):
-            index = 0
-            for j in range(0, self.J*self.M,self.J): #jth operation
-                
-                permuted_index = self.seed.permuted(np.arange(J))
-                
-                self.population[chrom_index,j:j+J,0] = permuted_index # filling the job index first
-                self.population[chrom_index,j:j+J,1] = np.ones(J)*index 
-                index +=1
-        
+        self.population = self.seed.permuted(np.tile(np.tile(np.arange(self.J), [self.M]),[self.population_size,1]))
+        # self.population = np.zeros([self.population_size,self.chromosome_length],dtype = int)
+        ## Gives a numpy array of tuples, these tuples will store the operation information i.e. O_{ij} = ith job and jth operation
+        print(self.population)
         return 
     def dataLoader(self):
         with open(self.path, "r") as file:
             lst = [[int(j) for j in i.strip().split()] for i in file]
-            J = lst[0][0]
-            M = lst[0][1]
+            self.J = lst[0][0] # number of jobs
+            self.M = lst[0][1] #Number of machines
             ############ Setting the chromosome length ################3
-            self.chromosome_length = J*M
+            self.chromosome_length = self.J*self.M
             ''' The dataset has an implicit assumtion that each machine will be used exactly once in a job, i.e. the number of processes in a job equals to the number of machines'''
-            self.job_sequence_matrix = np.zeros([J, M])
-            self.process_time_matirx = np.zeros([J,M])
+            self.job_sequence_matrix = np.zeros([self.J, self.M])
+            self.process_time_matirx = np.zeros([self.J,self.M])
+            
 
 
             for i in range(1,len(lst)):
@@ -54,11 +61,7 @@ class JSSP_EA(EA):
                     k+=1
                
         return 
-    def check_conflict(self, machine_jobs,i,k):#ith job and kth operation
-        temp = machine_jobs[0,:] # contains the jobs that are being processed
-        # if i in machine_jobs[0,:]
-
-        return
+    
     
     def get_fitness(self, chromosome):
         '''
@@ -69,28 +72,19 @@ class JSSP_EA(EA):
         concurrent block is represented by [startindex, end index]
 
         '''
-        
         time = 0
-        machine_in_use = np.zeros([1,self.M], dtype = bool)
-        conc_block_machines = list()
-        conc_time = list()
-        c_index = [0,0]
-        for i in len(chromosome):
-            
-            j,o = chromosome[i,:] #o = order of the process in the job
-            m = self.job_sequence_matrix[j,o]
-            if not machine_in_use[m]:
-                if not m in conc_block_machines:
-                    time
-                # time += self.process_time_matirx[i,m]
-                print(j)
-        
+        order = self.get_order(chromosome)
+
+        current_machine = np.zeros([1, self.M])
+        previous_job = np.zeros([1, self.J])
+        for i in range(self.chromosome_length):
+            pass
         return time
     def evaluate(self):
         return super().evaluate()
 
 if __name__ == '__main__':
     obj = JSSP_EA()
-    
-    print(obj.evaluate())
+    obj.get_order(obj.population[1,:])
+    # print(obj.evaluate())
     # print(x)
