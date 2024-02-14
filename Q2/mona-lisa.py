@@ -5,7 +5,7 @@ import colour
 import matplotlib.pyplot as plt
 import numpy as np
 
-from imgChromo import ImgChromo as imgChromo
+from imgChromo import ImgChromo
 from EA_Base import EA
 import datetime
 rng = np.random.default_rng()
@@ -32,33 +32,72 @@ class EvolutionaryLisa(EA):
 
         super().__init__(seed, population_size, paramsset, mutation_rate, offspring_number,
                          num_generations, iterations, parent_selection_method, survival_selection_method, mutation_type, optimization_type)
-        self.paramsset = self.filename
+        self.filename = paramsset
         original_image = Image.open(self.filename)
         self.target_image = original_image.resize((264, 305))
         # why did the original code use these specific values?
         # self.target_image = original_image.resize((200,200))
-        self.img_size = (self.target_image.size[0], self.target_image.size[1])
-        imgChromo.ImgChromo(self.target_image.size)  # initialize image
+        self.length, self.width = self.target_image.size
+        self.img_size = (self.length, self.width)
 
-    def compute_fitness(self, chromosome, target):
-        lab1 = np.array(chromosome.array)
-        lab2 = np.array(target)
-        self.fitness = np.mean(
-            colour.difference.delta_E_CIE1976(lab1, lab2))  # delta_E_CIE1976(target, self.array))
+        # initialize image
+        ImgChromo(self.width, self.length)
+        plt.imshow(self.target_image)
+
+    # debugging selection processes
+
+    def tournament_select(self, population, tournament_size=6):
+        """
+        Selects the most fit individual from a randomly sampled subset of the population
+
+        Keyword arguments:
+        population -- current generation's population
+        tournament_size -- number of individuals randomly sampled to participate
+
+        Returns:
+        winner -- individual with the best fitness out of the tournament_size participants
+        """
+
+        # randomly sample participants
+        indices = np.random.choice(len(population), tournament_size)
+        random_subset = [population[i] for i in indices]
+
+        winner = None
+
+        # find individual with best fitness
+        for i in random_subset:
+            if (winner == None):
+                winner = i
+            elif i.fitness < winner.fitness:
+                winner = i
+
+        return winner
 
     def population_init(self):
-        filename = self.paramsset
+        self.population = []
         for i in range(self.population_size):
-            newChromosome = imgChromo(self.img_size)
+            newChromosome = ImgChromo(self.width, self.length)
             # sets newChromosome.fitness
-            self.compute_fitness(newChromosome, self.target_image)
+            newChromosome.compute_fitness(self.target_image)
             self.population.append(newChromosome)
+        print("fitness array", self.evaluate())
+        return self.evaluate()
 
-    def evolutionary_process(self, population_size, generations):
+    def evaluate(self):
+        print(f"fitness_values: {self.population[3].fitness}")
+        print("Evaluating")
+        fitness_array = np.array([chromosome.compute_fitness(
+            self.target_image) for chromosome in self.population])
+        print(f"fitness_values: {fitness_array}")
+        return fitness_array
+
+    def evolutionary_process(self, generations):
         '''
         Essentially overwrites the generation function in EA_base, however, with a few key differences.
         A mix of the code from our implementation of EA in EA_base.py and SebastianCharmot's in 
         https://medium.com/@sebastian.charmot/genetic-algorithm-for-image-recreation-4ca546454aaa
+
+        Fixes: this may not be removing children from the population
 
         '''
         params = {'generations': [],
@@ -73,17 +112,16 @@ class EvolutionaryLisa(EA):
         # def population_init() where EvolutionaryLisa inherits from EA
 
         # list of fitness values
-        fitness_list = self.evaluate()
-        fitness_values = np.sum(fitness_list) - fitness_list
+        # fitness_list = self.population_init()
+        # fitness_values = np.sum(fitness_list) - fitness_list
 
         for i in range(self.num_generations):  # can this be replaced with EA.Generation?
-            new_pop = []  # this is not init pop? What is this?
+            new_pop = []  # new children to be added here
             fittest_estimate = float('inf')
             # why not replace with population_size and a simple int counter, since len operations take longer
             while len(new_pop) < len(self.population):
-                parents = self.selection_scheme().get_parents(
-                    self.population, fitness_values, self.parent_selection_method)
-                parent_one, parent_two = parents[0], parents[1]
+                parent_one = self.tournament_select(self.population)
+                parent_two = self.tournament_select(self.population)
 
                 fittest_estimate = min(
                     parent_one.fitness, parent_two.fitness, fittest_estimate)
@@ -94,29 +132,27 @@ class EvolutionaryLisa(EA):
                     child = self.crossover_random(parent_one, parent_two)
 
                     while child == None:
-                        parents = self.selection_scheme().get_parents(
-                            self.population, fitness_values, self.parent_selection_method)
-                        parent_one, parent_two = parents[0], parents[1]
+                        parent_one = self.tournament_select(self.population)
+                        parent_two = self.tournament_select(self.population)
 
                         child = self.crossover(parent_one, parent_two)
 
-                elif sheSaidYes <= 0.9:
-                    child = self.crossover_2(parent_one, parent_two, 0.5)
+                # elif sheSaidYes <= 0.9:
+                #     child = self.crossover_2(parent_one, parent_two, 0.5)
 
-                    while child == None:
-                        parents = self.selection_scheme().get_parents(
-                            self.population, fitness_values, self.parent_selection_method)
-                        parent_one, parent_two = parents[0], parents[1]
+                #     while child == None:
+                #         parent_one = self.tournament_select(self.population)
+                #         parent_two = self.tournament_select(self.population)
 
-                        child = self.crossover_2(parent_one, parent_two, 0.5)
+                #         child = self.crossover_2(parent_one, parent_two, 0.5)
 
                 else:
                     child = self.mutate_pixels(parent_one)
 
                     while child == None:
-                        parents = self.selection_scheme().get_parents(
-                            self.population, fitness_values, self.parent_selection_method)
-                        child = self.mutate_pixels(parents[0])
+                        pparent_one = self.tournament_select(self.population)
+                        parent_two = self.tournament_select(self.population)
+                        child = self.mutate_pixels(parent_one)
 
                 # accept the child into new population list
                 new_pop.append(child)
@@ -130,7 +166,7 @@ class EvolutionaryLisa(EA):
                 params['crossover_used'].append("crossover_1")
                 params['pop_gen_used'].append("random_image_array_1")
                 params['im_size'].append(
-                    "(" + str(self.w) + "," + str(self.l) + ")")
+                    "(" + str(self.width) + "," + str(self.length) + ")")
 
             # book-keeping
             if i % 100 == 0 or i == generations - 1:
@@ -159,22 +195,23 @@ class EvolutionaryLisa(EA):
 
     def crossover_random(self, parent1, parent2):
         """
-        Basic and rudimentary crossover selects random pixels between each parent and 
+        Basic Multiply crossover selects random pixels between each parent and 
         creates a new child multiplying those pixel values.
 
         Returns the child only if the child is fitter than both parents
         """
         first = np.random.randint(
-            2, size=(self.img_size[0], self.img_size[1], 4))
+            2, size=(self.width, self.length, 4))
 
         second = 1 - first
 
-        first_half_child = np.multiply(first, parent1.array)
-        second_half_child = np.multiply(second, parent2.array)
+        first_half_child = np.multiply(first, parent1.img_array)
+        print(f'first: {first}\n parent_one: {parent1}')
+        second_half_child = np.multiply(second, parent2.img_array)
 
         child_array = np.add(first_half_child, second_half_child)
 
-        newChild = imgChromo(self.img_size[0], self.img_size[1])
+        newChild = ImgChromo(self.img_size[1], self.img_size[0])
 
         newChild.image = Image.fromarray(child_array.astype(np.uint8))
         newChild.img_array = child_array.astype(np.uint8)
@@ -187,7 +224,7 @@ class EvolutionaryLisa(EA):
         Returns the child only if the child is fitter than both parents
         """
         new_child = super().crossover(parent1, parent2)
-        if new_child.compute_fitness() > parent1.compute_fitness() and new_child.compute_fitness() > parent2.compute_fitness():
+        if new_child.compute_fitness(self.target_image) > parent1.compute_fitness(self.target_image) and new_child.compute_fitness(self.target_image) > parent2.compute_fitness(self.target_image):
             return new_child
         else:
             return None  # different from Mustafa's implementation, but more deterministic and less explorative crossover
@@ -214,21 +251,22 @@ class EvolutionaryLisa(EA):
         # perform horizontal crossover point
         if rand <= horizontal_prob:
 
-            split_point = random.randint(1, self.w)
+            split_point = random.randint(1, self.width)
 
-            first = np.ones((split_point, self.l))
-            first = np.vstack((first, np.zeros((self.w-split_point, self.l))))
+            first = np.ones((split_point, self.length))
+            first = np.vstack(
+                (first, np.zeros((self.width-split_point, self.length))))
 
         # perform vertical crossover point
         else:
-            split_point = random.randint(1, self.l)
+            split_point = random.randint(1, self.length)
 
-            first = np.ones((self.w, split_point))
+            first = np.ones((self.width, split_point))
 
-            first = np.hstack((first, np.zeros((self.w, self.l-split_point))))
+            first = np.hstack(
+                (first, np.zeros((self.width, self.length-split_point))))
 
         second = 1 - first
-
         # Creates the 4 dimensional versions to perform the mutliplying across all color channels
         first = np.dstack([first, first, first, first])
         second = np.dstack([second, second, second, second])
@@ -240,7 +278,7 @@ class EvolutionaryLisa(EA):
 
         child_array = np.add(half_chromo_1, half_chromo_2)
 
-        child = imgChromo(self.l, self.w)
+        child = ImgChromo(self.length, self.width)
 
         child.image = Image.fromarray(child_array.astype(np.uint8))
         child.img_array = child_array.astype(np.uint8)
@@ -262,8 +300,8 @@ class EvolutionaryLisa(EA):
         """
         # assign random values to
         for i in range(pixels):
-            x = random.randint(0, self.l-1)
-            y = random.randint(0, self.w-1)
+            x = random.randint(0, self.length-1)
+            y = random.randint(0, self.width-1)
             z = random.randint(0, 3)
 
             imgChoromo_.img_array[x][y][z] = imgChoromo_.img_array[x][y][z] + \
@@ -272,10 +310,18 @@ class EvolutionaryLisa(EA):
             imgChoromo_.image = Image.fromarray(imgChoromo_.img_array)
             imgChoromo_.compute_fitness(self.target_image)
 
+    def get_fitness(self, chromosome):  # for compatibility
+        return ImgChromo.compute_fitness(self.target_image)
 
-def run_evolution(self):
+
+def run_evolution():
     gp = EvolutionaryLisa(r'mona.png')
-
-    fittest = gp.evolutionary_process(100, 500)
+    # population_size = 100
+    generations = 500
+    fittest = gp.evolutionary_process(500)
     plt.imshow(fittest.image)
     plt.show()
+
+
+if __name__ == "__main__":
+    run_evolution()
