@@ -54,7 +54,7 @@ class JSSP_EA(EA):
             ''' The dataset has an implicit assumtion that each machine will be used exactly once in a job, i.e. the number of processes in a job equals to the number of machines'''
             self.job_sequence_matrix = np.zeros([self.J, self.M],dtype= int)
             self.process_time_matirx = np.zeros([self.J,self.M],dtype =int)
-            
+            print(np.shape(self.job_sequence_matrix))
 
 
             for i in range(1,len(lst)):
@@ -90,12 +90,23 @@ class JSSP_EA(EA):
 
         current_machine = np.zeros(self.M,dtype = int)
         previous_job = np.zeros(self.J,dtype = int)
+        # print(order)
+        # print(chromosome)
         for i in range(self.chromosome_length):
             j = chromosome[i]
             o = order[i]
    
-
-            m = self.job_sequence_matrix[j,o]
+            # print(j,o, end = '  ')
+            # print(self.job_sequence_matrix)
+            try:
+                m = self.job_sequence_matrix[j,o]
+            except:
+                print(i)
+                print(j, o)
+                print(order)
+                print(self.job_sequence_matrix)
+                print(chromosome)
+                sda
             # print(previous_job[j])
             
             maxi = np.max([current_machine[m], previous_job[j]]) + self.process_time_matirx[j,o]
@@ -147,7 +158,7 @@ class JSSP_EA(EA):
 
     
 if __name__ == '__main__':
-    seed = np.random.default_rng(42)
+    seed = np.random.default_rng(4)
     mutation_rate = 0.5
     num_generations = 1000
     suvivor_Selection = 'BT'
