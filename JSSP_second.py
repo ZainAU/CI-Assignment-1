@@ -114,12 +114,13 @@ class JSSP_EA(EA):
             Best = np.inf
             self.parent_selection_method = selection[0]
             self.survival_Selection_method = selection[1]
-            print(self.Iterations)
+         
             average_best_fitness = np.zeros([self.Iterations, self.num_generations])
             avg_avg_fitness = np.zeros([self.Iterations, self.num_generations])
             for i in range(self.Iterations):
                 
                 best_fit,average_fit= super().main()
+                print(f'Best of iteration-{i} = {np.min(best_fit)}')
                 average_best_fitness[i,:] = best_fit
                 avg_avg_fitness[i,:] = average_fit
                 if np.min(best_fit) < Best:
@@ -141,7 +142,7 @@ class JSSP_EA(EA):
             plt.legend(['Average fit', 'Best fit'])
      
             # Save the full figure...
-            fig.savefig(f'JSSP_figs/Best-fit-{int(Best)}-parent-{self.parent_selection_method}-survival-{self.survival_Selection_method}-{self.population_size}-{self.mutation_rate}-iteration-{i}.png')
+            fig.savefig(f'JSSP_figs/{self.path[:-4]}-Best-fit-{int(Best)}-parent-{self.parent_selection_method}-survival-{self.survival_Selection_method}-{self.population_size}-{self.mutation_rate}-iteration-{i}.png')
             # plt.show()
 
     
@@ -154,8 +155,8 @@ if __name__ == '__main__':
     optimization_type='minimization'
     population_size = 100
     offspring_number = 60
-    iterations = 4
-    path = 'abz5.txt'
+    iterations = 1
+    path = 'abz7.txt'
     
     obj = JSSP_EA(num_generations=num_generations,
                 optimization_type=optimization_type,
