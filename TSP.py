@@ -65,7 +65,7 @@ class TSP_EA(EA):
 
     def main(self, selection_methods):
         for selection in selection_methods:
-            # np.min(best_fit)
+            Best = np.inf
             self.parent_selection_method = selection[0]
             self.survival_Selection_method = selection[1]
             print(self.Iterations)
@@ -106,7 +106,7 @@ if __name__ == '__main__':
     optimization_type = 'minimization'
     population_size = 100
     offspring_number = 60
-    iterations = 4
+    iterations = 1
     obj = TSP_EA(num_generations=num_generations,
                  optimization_type=optimization_type,
                  survival_selection=suvivor_Selection,

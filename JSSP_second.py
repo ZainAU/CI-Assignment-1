@@ -54,7 +54,7 @@ class JSSP_EA(EA):
             ''' The dataset has an implicit assumtion that each machine will be used exactly once in a job, i.e. the number of processes in a job equals to the number of machines'''
             self.job_sequence_matrix = np.zeros([self.J, self.M],dtype= int)
             self.process_time_matirx = np.zeros([self.J,self.M],dtype =int)
-            
+            print(np.shape(self.job_sequence_matrix))
 
 
             for i in range(1,len(lst)):
@@ -90,12 +90,23 @@ class JSSP_EA(EA):
 
         current_machine = np.zeros(self.M,dtype = int)
         previous_job = np.zeros(self.J,dtype = int)
+        # print(order)
+        # print(chromosome)
         for i in range(self.chromosome_length):
             j = chromosome[i]
             o = order[i]
    
-
-            m = self.job_sequence_matrix[j,o]
+            # print(j,o, end = '  ')
+            # print(self.job_sequence_matrix)
+            try:
+                m = self.job_sequence_matrix[j,o]
+            except:
+                print(i)
+                print(j, o)
+                print(order)
+                print(self.job_sequence_matrix)
+                print(chromosome)
+                sda
             # print(previous_job[j])
             
             maxi = np.max([current_machine[m], previous_job[j]]) + self.process_time_matirx[j,o]
@@ -114,12 +125,13 @@ class JSSP_EA(EA):
             Best = np.inf
             self.parent_selection_method = selection[0]
             self.survival_Selection_method = selection[1]
-            print(self.Iterations)
+         
             average_best_fitness = np.zeros([self.Iterations, self.num_generations])
             avg_avg_fitness = np.zeros([self.Iterations, self.num_generations])
             for i in range(self.Iterations):
                 
                 best_fit,average_fit= super().main()
+                print(f'Best of iteration-{i} = {np.min(best_fit)}')
                 average_best_fitness[i,:] = best_fit
                 avg_avg_fitness[i,:] = average_fit
                 if np.min(best_fit) < Best:
@@ -141,12 +153,12 @@ class JSSP_EA(EA):
             plt.legend(['Average fit', 'Best fit'])
      
             # Save the full figure...
-            fig.savefig(f'JSSP_figs/Best-fit-{int(Best)}-parent-{self.parent_selection_method}-survival-{self.survival_Selection_method}-{self.population_size}-{self.mutation_rate}-iteration-{i}.png')
+            fig.savefig(f'JSSP_figs/{self.path[:-4]}-Best-fit-{int(Best)}-parent-{self.parent_selection_method}-survival-{self.survival_Selection_method}-{self.population_size}-{self.mutation_rate}-iteration-{i}.png')
             # plt.show()
 
     
 if __name__ == '__main__':
-    seed = np.random.default_rng(42)
+    seed = np.random.default_rng(4)
     mutation_rate = 0.5
     num_generations = 1000
     suvivor_Selection = 'BT'
@@ -154,8 +166,8 @@ if __name__ == '__main__':
     optimization_type='minimization'
     population_size = 100
     offspring_number = 60
-    iterations = 4
-    path = 'abz5.txt'
+    iterations = 1
+    path = 'abz7.txt'
     
     obj = JSSP_EA(num_generations=num_generations,
                 optimization_type=optimization_type,
