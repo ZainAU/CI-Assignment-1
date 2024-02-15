@@ -65,7 +65,11 @@ class TSP_EA(EA):
 
     def main(self, selection_methods):
         for selection in selection_methods:
-            Best = np.inf
+<<<<<<< HEAD
+            # np.min(best_fit)
+=======
+            Best= np.inf
+>>>>>>> f3c133e989c3d2ff3070590407b83ebba482fcef
             self.parent_selection_method = selection[0]
             self.survival_Selection_method = selection[1]
             print(self.Iterations)
