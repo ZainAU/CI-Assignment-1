@@ -1,0 +1,118 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath,amsfonts}
+\usepackage{algorithmic}
+\usepackage{algorithm}
+\usepackage{array}
+\usepackage[caption=false,font=normalsize,labelfont=sf,textfont=sf]{subfig}
+\usepackage{textcomp}
+\usepackage{stfloats}
+\usepackage{url}
+\usepackage{verbatim}
+\usepackage{graphicx}
+\usepackage{cite}
+\usepackage{tikz}
+\usetikzlibrary{positioning, quotes}
+\hyphenation{op-tical net-works semi-conduc-tor IEEE-Xplore}
+% updated with editorial comments 8/9/2021
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=blue,      
+    urlcolor=blue,
+    pdftitle={Deep Reinforcement Learning in Robotics: A Systematic Review},
+    pdfpagemode=FullScreen,
+    }
+\urlstyle{same}
+\usepackage{titlesec}
+
+\setcounter{secnumdepth}{4}
+
+\titleformat{\paragraph}
+{\normalfont\normalsize\bfseries}{\theparagraph}{1em}{}
+\titlespacing*{\paragraph}
+{0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+
+\begin{document}
+
+\title{Computational Intelligence Assignment I}
+
+
+\author{Syed Mustafa sm06554\\Zain Ahmed Usmani Zu06777}
+
+\maketitle
+
+
+\section{Introduction}
+
+\section{Travelling Salesman Problem}
+\section{Problem Formulation}
+\subsection{Representation}
+Each potential solution (a path) was represented as a list and was 
+
+\section{Job Shop Scheduling Problem}
+\subsection{Problem Formulation}
+
+\subsection{Result}
+\subsection{Analysis}
+
+\section{Evolutionary Art}
+\subsection{Problem Formulation}
+The problem can be summarized as generating an image through a source image using polygons of varying colors using evolutionary algorithms such that the resulting image is as close to the source image in resemblance.
+
+\subsubsection{Representation}
+The source image was read and handled as RGB images, and hence the chromosomes that would form the solution were also RGB images. To initialize a chromosome, a central point was defined at a randomly chosen point in the image range. Around this point at least 3 more points were added within a random region range. These points were then filled with a randomly chosen flat color. A variety of such shapes were drawn over the same canvas and the final RGB values at each pixel were stored in an array.
+This array forms the chromosome. Generally, throughout our experimentation we have kept about 100 different chromosomes in our population. 
+
+\subsubsection{Fitness Function}
+We experimented with two differented fitness functions. 
+One of these was just the mean of differences in RGB values for all pixels in the image. 
+The other approach used Delta E color difference to differentiate between the two. We used \href{https://colour.readthedocs.io/en/latest/colour.difference.html}{CIE1976} implementation of  
+\subsubsection{Parameters}
+Other parameters: generations, population size,
+\paragraph{Polygon Sides}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.5\linewidth]{50polyrandom.png}
+    \caption{Initialized image with polygons having up to 50 sides.}
+    \label{fig:50poly}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.5\linewidth]{6polyrandom_init.png}
+    \caption{Initialized image with polygons having up to 6 sides.}
+    \label{fig:6poly}
+\end{figure}
+    \begin{verbatim}
+        
+    \end{verbatim}
+More custom polygons would result in better solutions maybe, they did converge faster, while taking slightly longer to compute 
+\paragraph{Fitness function}
+\paragraph{Image size}
+\paragraph{Crossover Functions}
+\paragraph{Mutation Functions}
+
+\subsection{Fine-tuning}
+Time taken with high polygon resolution, time taken with simpler fitness function.
+\subsection{Results}
+\begin{figure}[h]
+ \centering
+  \subfloat[Generation 0]{\includegraphics[width=.3\linewidth]{Mona Lisa 2/fittest_0.png}} \hfill
+  \subfloat[Generation 100]{\includegraphics[width=.3\linewidth]{Mona Lisa 2/fittest_100.png}} \hfill
+  \subfloat[Generation 200]{\includegraphics[width=.3\linewidth]{Mona Lisa 2/fittest_200.png}} \hfill
+  \subfloat[Generation 300]{\includegraphics[width=.3\linewidth]{Mona Lisa 2/fittest_300.png}} \hfill
+  \subfloat[Generation 400]{\includegraphics[width=.3\linewidth]{Mona Lisa 2/fittest_400.png}} \hfill
+  \subfloat[Generation 499]{\includegraphics[width=.3\linewidth]{Mona Lisa 2/fittest_499.png}} \
+  \caption{Mona Lisa over 500 generations}
+\end{figure}
+\subsection{Future Work}
+\begin{itemize}
+    \item Allow for the evolutionary process to be resumed after an incomplete run. Writing the current representation (population) onto some file and restoring the evolutionary process would be helpful. It would also allow us to experiment with how changing values on the go affects the results.
+\end{itemize}
+
+\begin{thebibliography}{00}
+\bibitem{JSSP} Omar, M., Baharum, A., \& Hasan, Y. A. (2006, June). A job-shop scheduling problem (JSSP) using genetic algorithm (GA). In Proceedings of the 2nd im TG T Regional Conference on Mathematics, Statistics and Applications Universiti Sains Malaysia.
+\bibitem{medium} Charmot, S. (2022, September 4). A True Genetic Algorithm for Image Recreation — Painting the Mona Lisa.
+\end{thebibliography}
+
+\end{document}

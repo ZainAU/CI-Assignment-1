@@ -31,14 +31,14 @@ class ImgChromo:
 
     def create_random_image_array(self):
         # number of polygons to add to the image
-        iterations = random.randint(3, 50)
+        iterations = random.randint(3, self.max_poly_size)
         region = (self.l + self.w)//8  # the image is broken up into sections
         img = Image.new("RGBA", (self.l, self.w),
                         self.rand_color())  # (mode, size, color)
 
         # numebr of points for each polygon
         for i in range(iterations):
-            num_points = random.randint(3, 50)
+            num_points = random.randint(3, self.max_poly_size)
 
             # the centrepoints on where to create the image
             centrepoint_x = random.randint(0, self.l)
@@ -104,6 +104,7 @@ class ImgChromo:
         lab2 = np.array(target)
         self.fitness = np.mean(
             colour.difference.delta_E_CIE1976(lab1, lab2))  # delta_E_CIE1976(target, self.img_array))
+        return self.fitness
         # experimented with delta from various libraries.
         # DeltaE_CIE2000 needed some extra params that I didn't bother to add
 
